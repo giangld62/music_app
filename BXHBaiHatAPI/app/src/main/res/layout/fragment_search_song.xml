@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layoutDirection="rtl"
+            android:orientation="horizontal">
+
+            <Button
+                android:textColor="@color/black"
+                android:id="@+id/btn_search"
+                android:layout_width="wrap_content"
+                android:layout_height="64dp"
+                android:background="?selectableItemBackgroundBorderless"
+                android:text="Search"
+                android:textAllCaps="false" />
+
+            <EditText
+                android:layout_margin="5dp"
+                android:paddingLeft="20dp"
+                android:background="@drawable/bg_search"
+                android:id="@+id/edt_search"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:hint="content search"
+                android:singleLine="true" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rc"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+</layout>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+
+    <data>
+
+        <variable
+            name="data"
+            type="com.unica.bxhbaihatapi.model.song.Song" />
+    </data>
+
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_margin="2dp"
+        app:cardElevation="8dp"
+
+        app:cardCornerRadius="8dp"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/tv_img"
+                android:layout_width="match_parent"
+                android:layout_height="352dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/gaixinh"
+                app:loadImageLink="@{data.album != null ? data.album.thumbnailMedium : data.thumbNail}" />
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginRight="16dp"
+                android:text="Xa em"
+                android:textColor="?colorPrimary"
+                android:textSize="16sp"
+                app:setText="@{data.title}" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginRight="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Noo Phuoc Thinh"
+                android:textColor="?colorPrimary"
+                android:textSize="12sp"
+                app:setText="@{data.artist.name}" />
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</layout>
