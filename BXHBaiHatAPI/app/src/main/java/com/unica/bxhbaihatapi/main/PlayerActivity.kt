@@ -60,19 +60,18 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
 
 
     private fun startAnimation() {
-        val runnable = Runnable {
-            run {
+        val runnable = object: Runnable {
+            override fun run() {
                 binding.songImage.animate()
                     .rotationBy(360F)
-                    .setDuration(10000)
+                    .setDuration(30000)
                     .setInterpolator(LinearInterpolator())
                     .withEndAction(this)
-                    .start()
-            }
+                    .start()            }
         }
         binding.songImage.animate()
             .rotation(360F)
-            .setDuration(10000)
+            .setDuration(30000)
             .setInterpolator(LinearInterpolator())
             .withEndAction(runnable)
             .start()
