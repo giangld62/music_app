@@ -13,7 +13,7 @@ import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.common.Utils
 import com.unica.bxhbaihatapi.databinding.FragmentSearchSongBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
-import com.unica.bxhbaihatapi.main.MainActivity
+import com.unica.bxhbaihatapi.main.PlayerActivity
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseFragment
 
@@ -113,7 +113,8 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             songPath = ""
             PlayerActivity.songSearch = songSearchs[position]
             PlayerActivity.song = null
-            startActivity(Intent(context,PlayerActivity::class.java))
+            startActivity(Intent(context,
+                PlayerActivity::class.java))
         } else {
             position1 = position
             songPath = "http://api.mp3.zing.vn/api/streaming/audio/${
@@ -123,7 +124,8 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             songSearchPath = ""
             PlayerActivity.song = songs[position]
             PlayerActivity.songSearch = null
-            startActivity(Intent(context,PlayerActivity::class.java))
+            startActivity(Intent(context,
+                PlayerActivity::class.java))
         }
     }
 

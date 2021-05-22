@@ -1,4 +1,4 @@
-package com.unica.bxhbaihatapi.main.songonline
+package com.unica.bxhbaihatapi.main
 
 import android.media.MediaPlayer
 import android.net.Uri
@@ -12,6 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.databinding.ActivityPlayerBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
+import com.unica.bxhbaihatapi.main.songonline.SongSearchFragment
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseActivity
 import kotlin.random.Random
@@ -41,9 +42,12 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_player)
         if (song != null) {
-            binding.song = song
-        } else binding.songSearch = songSearch
-        position = SongSearchFragment.position1
+            binding.song =
+                song
+        } else binding.songSearch =
+            songSearch
+        position =
+            SongSearchFragment.position1
         playSong()
         binding.seekBar.setOnSeekBarChangeListener(this)
         runOnUiThread(Runnable {
@@ -192,7 +196,9 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
     private fun prepareSong(imageInt: Int) {
         mediaPlayer!!.stop()
         mediaPlayer!!.release()
-        mediaPlayer = MediaPlayer.create(applicationContext, uri)
+        mediaPlayer = MediaPlayer.create(applicationContext,
+            uri
+        )
         binding.playPause.setBackgroundResource(imageInt)
         mediaPlayer!!.setOnCompletionListener(this@PlayerActivity)
     }
@@ -252,10 +258,14 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         if (mediaPlayer != null) {
             mediaPlayer!!.stop()
             mediaPlayer!!.release()
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            mediaPlayer = MediaPlayer.create(applicationContext,
+                uri
+            )
             mediaPlayer!!.start()
         } else {
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            mediaPlayer = MediaPlayer.create(applicationContext,
+                uri
+            )
             mediaPlayer!!.start()
         }
         binding.seekBar.max = mediaPlayer!!.duration / 1000
@@ -293,7 +303,9 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         handlerNextOrPreviousButton(1)
         binding.seekBar.max = mediaPlayer!!.duration / 1000
         if (mediaPlayer != null) {
-            mediaPlayer = MediaPlayer.create(applicationContext, uri)
+            mediaPlayer = MediaPlayer.create(applicationContext,
+                uri
+            )
             mediaPlayer!!.start()
             startAnimation()
             mediaPlayer!!.setOnCompletionListener(this)

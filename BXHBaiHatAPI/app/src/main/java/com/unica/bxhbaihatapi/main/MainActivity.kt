@@ -3,14 +3,8 @@ package com.unica.bxhbaihatapi.main
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
 import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.databinding.ActivityMainBinding
-import com.unica.bxhbaihatapi.db.entity.SongSearch
-import com.unica.bxhbaihatapi.main.songonline.PlayerActivity
-import com.unica.bxhbaihatapi.main.songonline.ViewPagerAdapter
-import com.unica.bxhbaihatapi.model.song.Song
-import com.unica.bxhbaihatapi.ui.base.BaseFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
@@ -18,7 +12,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this,R.layout.activity_main)
         binding.tabLayout.setupWithViewPager(binding.viewPager)
-        binding.viewPager.adapter = ViewPagerAdapter(supportFragmentManager)
+        binding.viewPager.adapter =
+            ViewPagerAdapter(supportFragmentManager)
 //        openFirstFragment(SongSearchFragment::class.java)
     }
 
