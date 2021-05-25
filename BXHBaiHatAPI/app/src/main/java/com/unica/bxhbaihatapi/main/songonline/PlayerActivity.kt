@@ -1,4 +1,4 @@
-package com.unica.bxhbaihatapi.main
+package com.unica.bxhbaihatapi.main.songonline
 
 import android.media.MediaPlayer
 import android.net.Uri
@@ -12,7 +12,7 @@ import androidx.databinding.DataBindingUtil
 import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.databinding.ActivityPlayerBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
-import com.unica.bxhbaihatapi.main.songonline.SongSearchFragment
+import com.unica.bxhbaihatapi.main.songoffline.SongData
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseActivity
 import kotlin.random.Random
@@ -20,6 +20,7 @@ import kotlin.random.Random
 class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnable,
     View.OnClickListener, SeekBar.OnSeekBarChangeListener {
     companion object {
+        var songOffline: SongData? = null
         var song: Song? = null
         var songSearch: SongSearch? = null
         var uri: Uri? = null
@@ -36,18 +37,17 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
 
     private lateinit var binding: ActivityPlayerBinding
     private var handler: Handler = Handler(Looper.getMainLooper())
-    
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = DataBindingUtil.setContentView(this,R.layout.activity_player)
-        if (song != null) {
-            binding.song =
-                song
-        } else binding.songSearch =
-            songSearch
-        position =
-            SongSearchFragment.position1
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_player)
+        if(song !=null){
+            binding.song = song
+        }
+        else
+            binding.songSearch = songSearch
+        position = SongSearchFragment.position1
         playSong()
         binding.seekBar.setOnSeekBarChangeListener(this)
         runOnUiThread(Runnable {
@@ -58,16 +58,16 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
     }
 
 
-
     private fun startAnimation() {
-        val runnable = object: Runnable {
+        val runnable = object : Runnable {
             override fun run() {
                 binding.songImage.animate()
                     .rotationBy(360F)
                     .setDuration(30000)
                     .setInterpolator(LinearInterpolator())
                     .withEndAction(this)
-                    .start()            }
+                    .start()
+            }
         }
         binding.songImage.animate()
             .rotation(360F)
@@ -86,14 +86,12 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         playThreadBtn()
         prevThreadBtn()
         nextThreadBtn()
-        if(mediaPlayer!!.isPlaying){
+        if (mediaPlayer!!.isPlaying) {
             startAnimation()
-        }
-        else
+        } else
             stopAnimation()
         super.onResume()
     }
-
 
     private fun handlerNextOrPreviousButton(x: Int) {
         if (song != null) {
@@ -167,16 +165,16 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
     private fun previousOrNextSetup(imageInt: Int, x: Int, y: Any) {
         if (shuffleBoolean && !repeatBoolean) {
             position = Random.nextInt(y as Int) + x
-            if(position <0){
-                position = y-1
+            if (position < 0) {
+                position = y - 1
             }
-            if(position == y-1){
+            if (position == y - 1) {
                 position = 0
             }
         } else if (!shuffleBoolean && !repeatBoolean) {
             position = (position + x) % (y as Int)
-            if(position <0){
-                position = y-1
+            if (position < 0) {
+                position = y - 1
             }
         }
         if (song != null) {
@@ -195,7 +193,8 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
     private fun prepareSong(imageInt: Int) {
         mediaPlayer!!.stop()
         mediaPlayer!!.release()
-        mediaPlayer = MediaPlayer.create(applicationContext,
+        mediaPlayer = MediaPlayer.create(
+            applicationContext,
             uri
         )
         binding.playPause.setBackgroundResource(imageInt)
@@ -257,12 +256,14 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         if (mediaPlayer != null) {
             mediaPlayer!!.stop()
             mediaPlayer!!.release()
-            mediaPlayer = MediaPlayer.create(applicationContext,
+            mediaPlayer = MediaPlayer.create(
+                applicationContext,
                 uri
             )
             mediaPlayer!!.start()
         } else {
-            mediaPlayer = MediaPlayer.create(applicationContext,
+            mediaPlayer = MediaPlayer.create(
+                applicationContext,
                 uri
             )
             mediaPlayer!!.start()
@@ -302,7 +303,8 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         handlerNextOrPreviousButton(1)
         binding.seekBar.max = mediaPlayer!!.duration / 1000
         if (mediaPlayer != null) {
-            mediaPlayer = MediaPlayer.create(applicationContext,
+            mediaPlayer = MediaPlayer.create(
+                applicationContext,
                 uri
             )
             mediaPlayer!!.start()

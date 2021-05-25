@@ -13,7 +13,7 @@ import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.common.Utils
 import com.unica.bxhbaihatapi.databinding.FragmentSearchSongBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
-import com.unica.bxhbaihatapi.main.PlayerActivity
+import com.unica.bxhbaihatapi.main.songoffline.SongOfflinePlayerActivity
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseFragment
 
@@ -104,6 +104,10 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
     }
 
     override fun onItemClick(position: Int) {
+        if(SongOfflinePlayerActivity.mediaPlayer?.isPlaying == true){
+            SongOfflinePlayerActivity.mediaPlayer!!.stop()
+            SongOfflinePlayerActivity.mediaPlayer!!.release()
+        }
         if (getData(position) is SongSearch) {
             position1 = position
             songSearchPath = "http://api.mp3.zing.vn/api/streaming/audio/${
@@ -113,6 +117,7 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             songPath = ""
             PlayerActivity.songSearch = songSearchs[position]
             PlayerActivity.song = null
+            PlayerActivity.songOffline = null
             startActivity(Intent(context,
                 PlayerActivity::class.java))
         } else {
@@ -123,6 +128,7 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             }/320"
             songSearchPath = ""
             PlayerActivity.song = songs[position]
+            PlayerActivity.songOffline = null
             PlayerActivity.songSearch = null
             startActivity(Intent(context,
                 PlayerActivity::class.java))
