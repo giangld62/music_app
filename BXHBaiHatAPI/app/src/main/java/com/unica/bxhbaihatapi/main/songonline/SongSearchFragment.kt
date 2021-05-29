@@ -3,23 +3,25 @@ package com.unica.bxhbaihatapi.main.songonline
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.common.Utils
 import com.unica.bxhbaihatapi.databinding.FragmentSearchSongBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
+import com.unica.bxhbaihatapi.main.MainActivity
 import com.unica.bxhbaihatapi.main.songoffline.SongOfflinePlayerActivity
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseFragment
 
+
 class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISongSearch {
     private var model: SongSearchModel? = null
     private var binding: FragmentSearchSongBinding? = null
+    private lateinit var fav: MenuItem
 
     companion object {
         val songs = mutableListOf<Song>()
@@ -35,6 +37,7 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSearchSongBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         return binding!!.root
     }
 
@@ -104,9 +107,9 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
     }
 
     override fun onItemClick(position: Int) {
-        if(SongOfflinePlayerActivity.mediaPlayer!=null){
-            SongOfflinePlayerActivity.mediaPlayer!!.stop()
+        if (SongOfflinePlayerActivity.mediaPlayer != null) {
             SongOfflinePlayerActivity.mediaPlayer!!.release()
+            SongOfflinePlayerActivity.mediaPlayer = null
         }
         if (getData(position) is SongSearch) {
             position1 = position
@@ -118,8 +121,12 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             PlayerActivity.songSearch = songSearchs[position]
             PlayerActivity.song = null
             PlayerActivity.songOffline = null
-            startActivity(Intent(context,
-                PlayerActivity::class.java))
+            startActivity(
+                Intent(
+                    context,
+                    PlayerActivity::class.java
+                )
+            )
         } else {
             position1 = position
             songPath = "http://api.mp3.zing.vn/api/streaming/audio/${
@@ -130,8 +137,12 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             PlayerActivity.song = songs[position]
             PlayerActivity.songOffline = null
             PlayerActivity.songSearch = null
-            startActivity(Intent(context,
-                PlayerActivity::class.java))
+            startActivity(
+                Intent(
+                    context,
+                    PlayerActivity::class.java
+                )
+            )
         }
     }
 
@@ -156,4 +167,7 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             }
         }.create().show()
     }
+
 }
+
+
