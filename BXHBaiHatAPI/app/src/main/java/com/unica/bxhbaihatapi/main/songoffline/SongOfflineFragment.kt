@@ -3,6 +3,8 @@ package com.unica.bxhbaihatapi.main.songoffline
 import android.content.Intent
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -11,9 +13,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.unica.bxhbaihatapi.databinding.FragmentSongOfflineBinding
 import com.unica.bxhbaihatapi.main.MainActivity
 import com.unica.bxhbaihatapi.main.songonline.PlayerActivity
+import java.util.*
 
 
-class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline {
+class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline, TextWatcher {
 
     private lateinit var binding : FragmentSongOfflineBinding
     companion object{
@@ -25,10 +28,15 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentSongOfflineBinding.inflate(inflater,container,false)
-        getAllSong()
+        listOfSongOffline = getAllSong()
         binding.rcvSong.adapter = SongOfflineAdapter(this)
         binding.rcvSong.layoutManager = LinearLayoutManager(context)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        binding.edtSearch.addTextChangedListener(this)
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onResume() {
@@ -38,6 +46,7 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline {
     }
 
     private fun getAllSong() : MutableList<SongData>{
+        val listOfSong = mutableListOf<SongData>()
         val uri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val projection = arrayOf(
             MediaStore.Audio.Media.ALBUM,
@@ -54,11 +63,11 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline {
                 val duration = cursor.getString(2)
                 val path = cursor.getString(3)
                 val artist = cursor.getString(4)
-                listOfSongOffline.add(SongData(path,title,artist,album,duration))
+                listOfSong.add(SongData(path,title,artist,album,duration))
             }
             cursor.close()
         }
-        return listOfSongOffline
+        return listOfSong
     }
 
     override fun getCount(): Int {
@@ -76,6 +85,28 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline {
         }
         position1 = position
         startActivity(Intent(context, SongOfflinePlayerActivity::class.java))
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        val userInput = binding.edtSearch.text.toString().toLowerCase(Locale.ROOT).trim()
+        val tempList = mutableListOf<SongData>()
+        listOfSongOffline = if(userInput.isEmpty()){
+            getAllSong()
+        }else{
+            for(song in listOfSongOffline){
+                if(song.title.toLowerCase(Locale.ROOT).contains(userInput)){
+                    tempList.add(song)
+                }
+            }
+            tempList
+        }
+        binding.rcvSong.adapter!!.notifyDataSetChanged()
+    }
+
+    override fun afterTextChanged(s: Editable?) {
     }
 
 }

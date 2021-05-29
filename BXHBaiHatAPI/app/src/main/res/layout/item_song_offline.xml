@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
     <data>
+
         <variable
             name="data"
             type="com.unica.bxhbaihatapi.main.songoffline.SongData" />
     </data>
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:background="@color/black"
         android:id="@+id/audio_item"
@@ -28,6 +31,6 @@
             android:textColor="@color/white"
             android:text='@{data.title,default="Music Name"}'
             android:id="@+id/music_file_name"/>
-
     </RelativeLayout>
+
 </layout>

@@ -14,7 +14,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BXHBaiHatAPI">
-        <activity android:name=".main.songoffline.SongOfflinePlayerActivity"></activity>
+        <activity android:name=".main.songoffline.SongOfflinePlayerActivity"
+            android:theme="@style/Theme.BXHBaiHatAPI.PlayerMusic"/>
         <activity android:name=".main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,7 +23,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".main.songonline.PlayerActivity" />
+        <activity android:name=".main.songonline.PlayerActivity"
+            android:theme="@style/Theme.BXHBaiHatAPI.PlayerMusic"/>
     </application>
 
 </manifest>
