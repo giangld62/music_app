@@ -70,7 +70,7 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline {
     }
 
     override fun onItemClick(position: Int) {
-        if(PlayerActivity.mediaPlayer?.isPlaying == true){
+        if(PlayerActivity.mediaPlayer!=null){
             PlayerActivity.mediaPlayer!!.stop()
             PlayerActivity.mediaPlayer!!.release()
         }

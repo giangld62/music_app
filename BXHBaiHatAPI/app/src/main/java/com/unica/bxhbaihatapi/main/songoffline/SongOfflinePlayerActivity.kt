@@ -40,8 +40,6 @@ class SongOfflinePlayerActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeLi
         listOfSong = SongOfflineFragment.listOfSongOffline
         binding.data = song
         playSong()
-
-
         mediaPlayer!!.setOnCompletionListener(this)
         binding.seekBar.setOnSeekBarChangeListener(this)
         this.runOnUiThread(Runnable {
@@ -62,6 +60,7 @@ class SongOfflinePlayerActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeLi
 
 
     override fun onResume() {
+        playSong()
         playThreadBtn()
         prevThreadBtn()
         nextThreadBtn()

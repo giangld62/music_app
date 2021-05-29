@@ -48,7 +48,6 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         else
             binding.songSearch = songSearch
         position = SongSearchFragment.position1
-        playSong()
         binding.seekBar.setOnSeekBarChangeListener(this)
         runOnUiThread(Runnable {
             updateDurationAndSeekBar()
@@ -82,6 +81,7 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
     }
 
     override fun onResume() {
+        playSong()
         mediaPlayer!!.setOnCompletionListener(this)
         playThreadBtn()
         prevThreadBtn()
