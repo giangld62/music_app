@@ -79,9 +79,9 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline, TextWat
     }
 
     override fun onItemClick(position: Int) {
-        if(PlayerActivity.mediaPlayer?.isPlaying == true){
-            PlayerActivity.mediaPlayer!!.stop()
+        if(PlayerActivity.mediaPlayer!=null){
             PlayerActivity.mediaPlayer!!.release()
+            PlayerActivity.mediaPlayer = null
         }
         position1 = position
         startActivity(Intent(context, SongOfflinePlayerActivity::class.java))

@@ -107,9 +107,9 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
     }
 
     override fun onItemClick(position: Int) {
-        if (SongOfflinePlayerActivity.mediaPlayer?.isPlaying == true) {
-            SongOfflinePlayerActivity.mediaPlayer!!.stop()
+        if (SongOfflinePlayerActivity.mediaPlayer != null) {
             SongOfflinePlayerActivity.mediaPlayer!!.release()
+            SongOfflinePlayerActivity.mediaPlayer = null
         }
         if (getData(position) is SongSearch) {
             position1 = position
