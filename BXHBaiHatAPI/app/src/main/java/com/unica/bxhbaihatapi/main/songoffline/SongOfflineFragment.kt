@@ -57,12 +57,17 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline, TextWat
         )
         val cursor = (activity as MainActivity).contentResolver.query(uri,projection,null,null,null)
         if(cursor!=null){
+            val albumIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)
+            val titleIndex = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)
+            val durationIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)
+            val pathIndex = cursor.getColumnIndex(MediaStore.Audio.Media.DATA)
+            val artistIndex = cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)
             while (cursor.moveToNext()){
-                val album = cursor.getString(0)
-                val title = cursor.getString(1)
-                val duration = cursor.getString(2)
-                val path = cursor.getString(3)
-                val artist = cursor.getString(4)
+                val album = cursor.getString(albumIndex)
+                val title = cursor.getString(titleIndex)
+                val duration = cursor.getString(durationIndex)
+                val path = cursor.getString(pathIndex)
+                val artist = cursor.getString(artistIndex)
                 listOfSong.add(SongData(path,title,artist,album,duration))
             }
             cursor.close()
@@ -97,7 +102,7 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline, TextWat
             getAllSong()
         }else{
             for(song in listOfSongOffline){
-                if(song.title.toLowerCase(Locale.ROOT).contains(userInput)){
+                if(song.title?.toLowerCase(Locale.ROOT)?.contains(userInput)!!){
                     tempList.add(song)
                 }
             }
