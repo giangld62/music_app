@@ -3,17 +3,17 @@ package com.unica.bxhbaihatapi.main.songonline
 import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.Toast
-import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.unica.bxhbaihatapi.R
 import com.unica.bxhbaihatapi.common.Utils
 import com.unica.bxhbaihatapi.databinding.FragmentSearchSongBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
-import com.unica.bxhbaihatapi.main.MainActivity
-import com.unica.bxhbaihatapi.main.songoffline.SongOfflinePlayerActivity
+import com.unica.bxhbaihatapi.main.songoffline.SongMusicPlayerActivity
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseFragment
 
@@ -21,7 +21,7 @@ import com.unica.bxhbaihatapi.ui.base.BaseFragment
 class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISongSearch {
     private var model: SongSearchModel? = null
     private var binding: FragmentSearchSongBinding? = null
-    private lateinit var fav: MenuItem
+    private var songSearchArtistImageLink = "https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/"
 
     companion object {
         val songs = mutableListOf<Song>()
@@ -107,9 +107,9 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
     }
 
     override fun onItemClick(position: Int) {
-        if (SongOfflinePlayerActivity.musicOfflineService != null) {
-            SongOfflinePlayerActivity.musicOfflineService!!.release()
-            SongOfflinePlayerActivity.musicOfflineService = null
+        if (SongMusicPlayerActivity.musicOfflineService != null) {
+            SongMusicPlayerActivity.musicOfflineService!!.release()
+            SongMusicPlayerActivity.musicOfflineService = null
         }
         if (getData(position) is SongSearch) {
             position1 = position
@@ -120,7 +120,6 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             songPath = ""
             PlayerActivity.songSearch = songSearchs[position]
             PlayerActivity.song = null
-            PlayerActivity.songOffline = null
             startActivity(
                 Intent(
                     context,
@@ -135,7 +134,6 @@ class SongSearchFragment : BaseFragment(), View.OnClickListener, SongAdapter.ISo
             }/320"
             songSearchPath = ""
             PlayerActivity.song = songs[position]
-            PlayerActivity.songOffline = null
             PlayerActivity.songSearch = null
             startActivity(
                 Intent(

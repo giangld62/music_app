@@ -77,7 +77,7 @@ class SongSearchModel {
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-
+                MyApp.getDB().songSearchDao().insertAll(songs)
             }, {
                 it.printStackTrace()
             })

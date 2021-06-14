@@ -1,6 +1,6 @@
-package com.unica.bxhbaihatapi.common.myinterface
+package com.unica.bxhbaihatapi.common
 
-interface ActionOffline {
+interface ActionMusic {
     fun nextBtnClicked()
     fun prevBtnClicked()
     fun playPauseBtnClicked()

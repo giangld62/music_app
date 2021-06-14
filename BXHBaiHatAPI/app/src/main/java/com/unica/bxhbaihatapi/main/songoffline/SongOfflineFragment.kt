@@ -84,12 +84,12 @@ class SongOfflineFragment : Fragment(), SongOfflineAdapter.ISongOffline, TextWat
     }
 
     override fun onItemClick(position: Int) {
-        if(PlayerActivity.mediaPlayer!=null){
-            PlayerActivity.mediaPlayer!!.release()
-            PlayerActivity.mediaPlayer = null
+        if(PlayerActivity.musicOnlineService!=null){
+            PlayerActivity.musicOnlineService!!.release()
+            PlayerActivity.musicOnlineService = null
         }
         position1 = position
-        startActivity(Intent(context, SongOfflinePlayerActivity::class.java))
+        startActivity(Intent(context, SongMusicPlayerActivity::class.java))
     }
 
     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

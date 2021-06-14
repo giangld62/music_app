@@ -14,7 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.BXHBaiHatAPI">
-        <activity android:name=".main.songoffline.SongOfflinePlayerActivity"
+        <activity android:name=".main.songoffline.SongMusicPlayerActivity"
             android:theme="@style/Theme.BXHBaiHatAPI.PlayerMusic"/>
         <activity android:name=".main.MainActivity">
             <intent-filter>
@@ -25,7 +25,14 @@
         </activity>
         <activity android:name=".main.songonline.PlayerActivity"
             android:theme="@style/Theme.BXHBaiHatAPI.PlayerMusic"/>
-        <receiver android:name=".broadcastreceiver.MusicOfflineReceiver">
+        <receiver android:name=".common.broadcastreceiver.MusicOfflineReceiver">
+            <intent-filter>
+                <action android:name="actionPrevious" />
+                <action android:name="actionNext" />
+                <action android:name="actionPlay" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name=".common.broadcastreceiver.MusicOnlineReceiver">
             <intent-filter>
                 <action android:name="actionPrevious" />
                 <action android:name="actionNext" />
@@ -33,6 +40,8 @@
             </intent-filter>
         </receiver>
         <service android:name=".common.service.MusicOfflineService"
+            android:enabled="true"/>
+        <service android:name=".common.service.MusicOnlineService"
             android:enabled="true"/>
     </application>
 

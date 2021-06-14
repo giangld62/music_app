@@ -11,12 +11,11 @@ import android.net.Uri
 import android.os.Binder
 import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.unica.bxhbaihatapi.R
-import com.unica.bxhbaihatapi.broadcastreceiver.MusicOfflineReceiver
 import com.unica.bxhbaihatapi.common.MyApp
-import com.unica.bxhbaihatapi.common.myinterface.ActionOffline
+import com.unica.bxhbaihatapi.common.broadcastreceiver.MusicOfflineReceiver
+import com.unica.bxhbaihatapi.common.ActionMusic
 import com.unica.bxhbaihatapi.main.songoffline.SongData
 import com.unica.bxhbaihatapi.main.songoffline.SongOfflineFragment
 
@@ -26,7 +25,7 @@ class MusicOfflineService : Service(), MediaPlayer.OnCompletionListener {
     var musicFiles = mutableListOf<SongData>()
     var uri: Uri? = null
     var position = -1
-    var actionPlaying: ActionOffline? = null
+    var actionPlaying: ActionMusic? = null
     private var isFistTime = true
 
     override fun onBind(intent: Intent): IBinder? {
@@ -41,7 +40,7 @@ class MusicOfflineService : Service(), MediaPlayer.OnCompletionListener {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         position = intent.getIntExtra("servicePosition", -1)
         val actionName = intent.getStringExtra("ActionName")
-        if (position != 1 && isFistTime) {
+        if (position != -1 && isFistTime) {
             playMedia(position)
             isFistTime = false
         }
@@ -58,7 +57,7 @@ class MusicOfflineService : Service(), MediaPlayer.OnCompletionListener {
     fun playMedia(position: Int) {
         musicFiles = SongOfflineFragment.listOfSongOffline
         if (mediaPlayer != null) {
-            stop()
+//            stop()
             release()
         }
         createMediaPlayer(position)
@@ -113,7 +112,7 @@ class MusicOfflineService : Service(), MediaPlayer.OnCompletionListener {
         onCompleted()
     }
 
-    fun setCallBack(actionPlaying: ActionOffline) {
+    fun setCallBack(actionPlaying: ActionMusic) {
         this.actionPlaying = actionPlaying
     }
 

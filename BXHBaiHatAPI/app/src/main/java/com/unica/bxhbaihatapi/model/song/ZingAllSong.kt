@@ -24,7 +24,9 @@ data class Song(
     var artist: Artist? = null,
     @SerializedName("thumbnail")
     var thumbNail: String? = null,
-    var album: Album? = null
+    var album: Album? = null,
+    @SerializedName("artists_names")
+    var artistsNames : String
 )
 
 data class Album(

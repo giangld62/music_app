@@ -1,33 +1,36 @@
 package com.unica.bxhbaihatapi.main.songonline
 
-import android.media.MediaPlayer
-import android.net.Uri
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
+import android.graphics.Bitmap
+import android.os.*
 import android.view.View
-import android.view.animation.LinearInterpolator
+import android.widget.ImageView
 import android.widget.SeekBar
 import androidx.databinding.DataBindingUtil
 import com.unica.bxhbaihatapi.R
+import com.unica.bxhbaihatapi.common.ActionMusic
+import com.unica.bxhbaihatapi.common.service.MusicOnlineService
 import com.unica.bxhbaihatapi.databinding.ActivityPlayerBinding
 import com.unica.bxhbaihatapi.db.entity.SongSearch
-import com.unica.bxhbaihatapi.main.songoffline.SongData
 import com.unica.bxhbaihatapi.model.song.Song
 import com.unica.bxhbaihatapi.ui.base.BaseActivity
 import kotlin.random.Random
 
-class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnable,
-    View.OnClickListener, SeekBar.OnSeekBarChangeListener {
+class PlayerActivity : BaseActivity(), Runnable,
+    ActionMusic,
+    View.OnClickListener, SeekBar.OnSeekBarChangeListener,ServiceConnection {
     companion object {
-        var songOffline: SongData? = null
         var song: Song? = null
         var songSearch: SongSearch? = null
-        var uri: Uri? = null
-        var mediaPlayer: MediaPlayer? = null
+        var musicOnlineService : MusicOnlineService? = null
+        var position = -1
+        var imageArtist : ImageView? = null
+        var artistImageBitmap : Bitmap? = null
     }
-
-    private var position = -1
+    
     private var shuffleBoolean = false
     private var repeatBoolean = false
 
@@ -37,103 +40,103 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
 
     private lateinit var binding: ActivityPlayerBinding
     private var handler: Handler = Handler(Looper.getMainLooper())
+    private var songSearchArtistImageLink = "https://photo-resize-zmp3.zadn.vn/w94_r1x1_jpeg/"
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_player)
+        imageArtist = binding.songImage
         if(song !=null){
             binding.song = song
         }
-        else
+        else{
             binding.songSearch = songSearch
+        }
+
         position = SongSearchFragment.position1
+        playSong()
         binding.seekBar.setOnSeekBarChangeListener(this)
         runOnUiThread(Runnable {
             updateDurationAndSeekBar()
         })
         binding.shuffle.setOnClickListener(this)
         binding.repeat.setOnClickListener(this)
+
+        val intent = Intent(this, MusicOnlineService::class.java)
+        bindService(intent, this, Context.BIND_AUTO_CREATE)
     }
 
-
-    private fun startAnimation() {
-        val runnable = object : Runnable {
-            override fun run() {
-                binding.songImage.animate()
-                    .rotationBy(360F)
-                    .setDuration(30000)
-                    .setInterpolator(LinearInterpolator())
-                    .withEndAction(this)
-                    .start()
-            }
-        }
-        binding.songImage.animate()
-            .rotation(360F)
-            .setDuration(30000)
-            .setInterpolator(LinearInterpolator())
-            .withEndAction(runnable)
-            .start()
-    }
-
-    private fun stopAnimation() {
-        binding.songImage.animate().cancel()
+    override fun onDestroy() {
+        super.onDestroy()
+        unbindService(this)
     }
 
     override fun onResume() {
-        playSong()
-        mediaPlayer!!.setOnCompletionListener(this)
         playThreadBtn()
         prevThreadBtn()
         nextThreadBtn()
-        if (mediaPlayer!!.isPlaying) {
-            startAnimation()
-        } else
-            stopAnimation()
         super.onResume()
     }
 
     private fun handlerNextOrPreviousButton(x: Int) {
         if (song != null) {
-            if (mediaPlayer!!.isPlaying) {
+            if (musicOnlineService!!.isPlaying) {
                 previousOrNextSetup(
                     R.drawable.ic_baseline_pause_24,
                     x,
                     SongSearchFragment.songs.size
                 )
-                mediaPlayer!!.start()
-                startAnimation()
+                musicOnlineService!!.start()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_pause_24,
+                    SongSearchFragment.songs[position].thumbNail,
+                    SongSearchFragment.songs[position].artistsNames,
+                    SongSearchFragment.songs[position].title
+                )
             } else {
                 previousOrNextSetup(
                     R.drawable.ic_baseline_play_arrow_24,
                     x,
                     SongSearchFragment.songs.size
                 )
-                stopAnimation()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_play_arrow_24,
+                    SongSearchFragment.songs[position].thumbNail,
+                    SongSearchFragment.songs[position].artistsNames,
+                    SongSearchFragment.songs[position].title
+                )
             }
             binding.durationTotal.text =
                 formattedTime(SongSearchFragment.songs[position].duration)
         } else {
-            if (mediaPlayer!!.isPlaying) {
+            if (musicOnlineService!!.isPlaying) {
                 previousOrNextSetup(
                     R.drawable.ic_baseline_pause_24,
                     x,
                     SongSearchFragment.songSearchs.size
                 )
-                mediaPlayer!!.start()
-                startAnimation()
+                musicOnlineService!!.start()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_pause_24,
+                    songSearchArtistImageLink+SongSearchFragment.songSearchs[position].thumb,
+                    SongSearchFragment.songSearchs[position].artist,
+                    SongSearchFragment.songSearchs[position].name
+                )
             } else {
                 previousOrNextSetup(
                     R.drawable.ic_baseline_play_arrow_24,
                     x,
                     SongSearchFragment.songSearchs.size
                 )
-                stopAnimation()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_play_arrow_24,
+                    songSearchArtistImageLink+SongSearchFragment.songSearchs[position].thumb,
+                    SongSearchFragment.songSearchs[position].artist,
+                    SongSearchFragment.songSearchs[position].name
+                )
             }
             binding.durationTotal.text =
                 formattedTime(SongSearchFragment.songSearchs[position].duration.toInt())
         }
-        binding.seekBar.max = mediaPlayer!!.duration / 1000
+        binding.seekBar.max = musicOnlineService!!.duration / 1000
     }
 
 
@@ -178,27 +181,20 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
             }
         }
         if (song != null) {
-            uri =
-                Uri.parse("http://api.mp3.zing.vn/api/streaming/audio/${(SongSearchFragment.songs[position]).id}/320")
             prepareSong(imageInt)
             binding.song = SongSearchFragment.songs[position]
         } else {
-            uri =
-                Uri.parse("http://api.mp3.zing.vn/api/streaming/audio/${(SongSearchFragment.songSearchs[position]).id}/320")
             prepareSong(imageInt)
             binding.songSearch = SongSearchFragment.songSearchs[position]
         }
     }
 
     private fun prepareSong(imageInt: Int) {
-        mediaPlayer!!.stop()
-        mediaPlayer!!.release()
-        mediaPlayer = MediaPlayer.create(
-            applicationContext,
-            uri
-        )
+        musicOnlineService!!.stop()
+        musicOnlineService!!.release()
+        musicOnlineService!!.createMediaPlayer(position)
         binding.playPause.setBackgroundResource(imageInt)
-        mediaPlayer!!.setOnCompletionListener(this@PlayerActivity)
+        musicOnlineService!!.onCompleted()
     }
 
     private fun playThreadBtn() {
@@ -213,15 +209,45 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
         (playThread as Thread).start()
     }
 
-    private fun playPauseBtnClicked() {
-        if (mediaPlayer!!.isPlaying) {
-            binding.playPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-            mediaPlayer!!.pause()
-            stopAnimation()
-        } else {
-            binding.playPause.setImageResource(R.drawable.ic_baseline_pause_24)
-            mediaPlayer!!.start()
-            startAnimation()
+    override fun playPauseBtnClicked() {
+        if(song != null){
+            if (musicOnlineService!!.isPlaying) {
+                binding.playPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                musicOnlineService!!.pause()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_play_arrow_24,
+                    SongSearchFragment.songs[position].thumbNail,
+                    SongSearchFragment.songs[position].artistsNames,
+                    SongSearchFragment.songs[position].title
+                )
+
+            } else {
+                binding.playPause.setImageResource(R.drawable.ic_baseline_pause_24)
+                musicOnlineService!!.start()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_pause_24,
+                    SongSearchFragment.songs[position].thumbNail,
+                    SongSearchFragment.songs[position].artistsNames,
+                    SongSearchFragment.songs[position].title
+                )
+            }
+        }
+        else{
+            if (musicOnlineService!!.isPlaying) {
+                binding.playPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
+                musicOnlineService!!.pause()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_play_arrow_24,
+                    songSearchArtistImageLink+SongSearchFragment.songSearchs[position].thumb,
+                    SongSearchFragment.songSearchs[position].artist,
+                    SongSearchFragment.songSearchs[position].name
+                )
+            } else {
+                binding.playPause.setImageResource(R.drawable.ic_baseline_pause_24)
+                musicOnlineService!!.start()
+                musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_pause_24,
+                    songSearchArtistImageLink+SongSearchFragment.songSearchs[position].thumb,
+                    SongSearchFragment.songSearchs[position].artist,
+                    SongSearchFragment.songSearchs[position].name
+                )
+            }
         }
     }
 
@@ -241,40 +267,14 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
 
     private fun playSong() {
         binding.playPause.setImageResource(R.drawable.ic_baseline_pause_24)
-        if (song != null) {
-            uri = Uri.parse("http://api.mp3.zing.vn/api/streaming/audio/${song!!.id}/320")
-            createSongOrSongSearch(song!!.duration)
-            startAnimation()
-        } else {
-            uri = Uri.parse("http://api.mp3.zing.vn/api/streaming/audio/${songSearch!!.id}/320")
-            createSongOrSongSearch(songSearch!!.duration.toInt())
-            startAnimation()
-        }
-    }
-
-    private fun createSongOrSongSearch(duration: Int) {
-        if (mediaPlayer != null) {
-            mediaPlayer!!.stop()
-            mediaPlayer!!.release()
-            mediaPlayer = MediaPlayer.create(
-                applicationContext,
-                uri
-            )
-            mediaPlayer!!.start()
-        } else {
-            mediaPlayer = MediaPlayer.create(
-                applicationContext,
-                uri
-            )
-            mediaPlayer!!.start()
-        }
-        binding.seekBar.max = mediaPlayer!!.duration / 1000
-        binding.durationTotal.text = formattedTime(duration)
+        val intent = Intent(this, MusicOnlineService::class.java)
+        intent.putExtra("servicePosition",position)
+        startService(intent)
     }
 
     override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        if (mediaPlayer != null && fromUser) {
-            mediaPlayer!!.seekTo(progress * 1000)
+        if (musicOnlineService != null && fromUser) {
+            musicOnlineService!!.seekTo(progress * 1000)
         }
     }
 
@@ -291,27 +291,14 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
     }
 
     private fun updateDurationAndSeekBar() {
-        if (mediaPlayer != null) {
-            val mCurrentPosition = mediaPlayer!!.currentPosition / 1000
+        if (musicOnlineService != null) {
+            val mCurrentPosition = musicOnlineService!!.currentPosition / 1000
             binding.seekBar.progress = mCurrentPosition
             binding.durationPlayed.text = formattedTime(mCurrentPosition)
         }
         handler.postDelayed(this, 1000)
     }
 
-    override fun onCompletion(mp: MediaPlayer?) {
-        handlerNextOrPreviousButton(1)
-        binding.seekBar.max = mediaPlayer!!.duration / 1000
-        if (mediaPlayer != null) {
-            mediaPlayer = MediaPlayer.create(
-                applicationContext,
-                uri
-            )
-            mediaPlayer!!.start()
-            startAnimation()
-            mediaPlayer!!.setOnCompletionListener(this)
-        }
-    }
 
     override fun onClick(v: View) {
         when (v.id) {
@@ -334,6 +321,42 @@ class PlayerActivity : BaseActivity(), MediaPlayer.OnCompletionListener, Runnabl
                 }
             }
         }
+    }
+
+    override fun nextBtnClicked() {
+        handlerNextOrPreviousButton(1)
+    }
+
+    override fun prevBtnClicked() {
+        handlerNextOrPreviousButton(-1)
+    }
+
+    override fun onServiceDisconnected(name: ComponentName?) {
+        musicOnlineService = null
+    }
+
+    override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+        val myBinder = service as MusicOnlineService.MyBinder
+        musicOnlineService = myBinder.service
+        musicOnlineService!!.setCallBack(this)
+        musicOnlineService!!.playMedia(position)
+        musicOnlineService!!.onCompleted()
+        if(song!=null){
+            binding.durationTotal.text = formattedTime(SongSearchFragment.songs[position].duration)
+            musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_pause_24,
+                SongSearchFragment.songs[position].thumbNail,
+                SongSearchFragment.songs[position].artistsNames,
+                SongSearchFragment.songs[position].title)
+        }
+        else{
+            binding.durationTotal.text = formattedTime(SongSearchFragment.songSearchs[position].duration.toInt())
+            musicOnlineService!!.showNotificationAsync(R.drawable.ic_baseline_pause_24,
+                songSearchArtistImageLink+SongSearchFragment.songSearchs[position].thumb,
+                SongSearchFragment.songSearchs[position].artist,
+                SongSearchFragment.songSearchs[position].name)
+        }
+        binding.seekBar.max = musicOnlineService!!.duration/1000
+
     }
 
 }

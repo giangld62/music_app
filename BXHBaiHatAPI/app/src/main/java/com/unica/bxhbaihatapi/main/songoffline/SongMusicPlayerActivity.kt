@@ -11,16 +11,15 @@ import android.os.IBinder
 import android.os.Looper
 import android.view.View
 import android.widget.SeekBar
-import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import com.unica.bxhbaihatapi.R
-import com.unica.bxhbaihatapi.common.myinterface.ActionOffline
+import com.unica.bxhbaihatapi.common.ActionMusic
 import com.unica.bxhbaihatapi.common.service.MusicOfflineService
 import com.unica.bxhbaihatapi.databinding.ActivitySongOfflinePlayerBinding
 import kotlin.random.Random
 
-class SongOfflinePlayerActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, Runnable,
-    View.OnClickListener, ActionOffline, ServiceConnection {
+class SongMusicPlayerActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeListener, Runnable,
+    View.OnClickListener, ActionMusic, ServiceConnection {
     private lateinit var binding: ActivitySongOfflinePlayerBinding
     private var handler: Handler = Handler(Looper.getMainLooper())
 
@@ -70,7 +69,6 @@ class SongOfflinePlayerActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeLi
         super.onDestroy()
         unbindService(this)
     }
-
     override fun nextBtnClicked() {
         if (musicOfflineService!!.isPlaying) {
             musicOfflineService!!.stop()
@@ -253,8 +251,8 @@ class SongOfflinePlayerActivity : AppCompatActivity(), SeekBar.OnSeekBarChangeLi
         binding.data = listOfSong[position]
         musicOfflineService!!.onCompleted()
         binding.durationTotal.text = formattedTime(listOfSong[position].duration!!.toInt()/1000)
-        binding.seekBar.max = musicOfflineService!!.duration/1000
         musicOfflineService!!.playMedia(position)
+        binding.seekBar.max = musicOfflineService!!.duration/1000
         musicOfflineService!!.showNotification(R.drawable.ic_baseline_pause_24)
     }
 
